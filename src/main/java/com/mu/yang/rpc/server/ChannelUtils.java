@@ -19,7 +19,8 @@ public class ChannelUtils {
     public static int channelRead(ReadableByteChannel channel,
                             ByteBuffer buffer) throws IOException {
 
-        @SuppressWarnings("UnnecessaryLocalVariable") int count = (buffer.remaining() <= NIO_BUFFER_LIMIT) ?
+        @SuppressWarnings("UnnecessaryLocalVariable")
+        int count = (buffer.remaining() <= NIO_BUFFER_LIMIT) ?
                 channel.read(buffer) : channelIO(channel, null, buffer);
         return count;
     }

@@ -1,4 +1,4 @@
-package com.mu.yang.rpc.core;
+package com.mu.yang.rpc.server;
 
 import com.alibaba.fastjson.JSON;
 import com.mu.yang.rpc.entity.Request;
@@ -19,7 +19,7 @@ import java.util.Map;
 /**
  * Created by yangxianda on 2016/12/18.
  */
-public class Server {
+public class SimpleServer {
 
     private ServerSocket serverSocket = null;
     private int port = 8080;
@@ -28,11 +28,11 @@ public class Server {
      * the delegate objects to
      */
     private Map<String, Object> objectMap = new HashMap<String, Object>();
-    public Server(int port){
+    public SimpleServer(int port){
         this.port = port;
     }
 
-    public Server addClass(Class<?> clazz){
+    public SimpleServer addClass(Class<?> clazz){
         Class<?>[] objs = clazz.getInterfaces();
         try {
             for(Class<?> inter : objs){
@@ -154,7 +154,7 @@ public class Server {
 
 
     public static void main(String[] args){
-        Server server = new Server(8080);
+        SimpleServer server = new SimpleServer(8080);
         server.addClass(HelloWorld.class).start();
     }
 }

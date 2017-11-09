@@ -19,17 +19,11 @@ public class Handler extends Thread {
 
     private BlockingQueue<Call> requestQueue;
     private BlockingQueue<Call> responseQueue;
-    private Writer writer;
+//    private Writer writer;
     public Handler(String name, BlockingQueue<Call> requestQueue){
         super.setName(name);
         this.requestQueue = requestQueue;
         this.responseQueue = new LinkedBlockingDeque<Call>();
-        try {
-            writer = new Writer(name+"WriterThread", responseQueue);
-          //  writer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public void run(){

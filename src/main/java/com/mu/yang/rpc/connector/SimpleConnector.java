@@ -82,12 +82,12 @@ public class SimpleConnector implements Connector, Runnable {
                 byte[] result = new byte[length];
                 inputStream.readFully(result);
                 String responseString = new String(result);
-                System.out.println("receive response: " + responseString);
                 Response response = JSON.parseObject(responseString, Response.class);
                 if(null != response.getId()) {
                     ResponseFuture future = futureMap.get(response.getId());
                     if(null != future){
                         future.done(response);
+                        System.out.println("receive response: " + responseString);
                     }
                 }
             }

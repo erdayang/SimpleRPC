@@ -4,7 +4,7 @@ import com.mu.yang.rpc.entity.Request;
 import com.mu.yang.rpc.entity.Response;
 
 /**
- * Created by yangxianda on 2017/3/4.
+ * 一次请求.
  */
 public class Call {
     private Request request;

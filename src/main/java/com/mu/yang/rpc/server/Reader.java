@@ -22,7 +22,7 @@ public class Reader extends Thread{
         super(name);
         this.requestQueue = requestQueue;
         readSelector = Selector.open();
-        connections = new LinkedBlockingQueue<Connection>();
+        connections = new LinkedBlockingQueue<>();
     }
 
     public void addConnection(Connection connection) throws InterruptedException {
@@ -51,14 +51,12 @@ public class Reader extends Thread{
                         doRead(key);
                     }
                 }
-            } catch (ClosedChannelException e) {
+            } catch (ClosedChannelException | InterruptedException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
                 if(null != key)
                     key.cancel();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
 
         }

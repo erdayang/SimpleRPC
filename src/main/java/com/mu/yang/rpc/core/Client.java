@@ -86,7 +86,7 @@ public class Client {
             return this;
         }
 
-        public  T build(){
+        public T build(){
             factory = new DefaultConnectorFactory(server, port);
             invocation = new Invoker(factory);
             T t = (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, invocation);
@@ -118,10 +118,6 @@ public class Client {
         System.out.println("all consume: " + allTtime);
         System.out.println("average consume: " + allTtime/count);
         System.exit(0);
-        Runtime.getRuntime().addShutdownHook(new Thread(){
-            public void run(){
-                Client.shutdown();
-            }
-        });
+        Runtime.getRuntime().addShutdownHook(new Thread(Client::shutdown));
     }
 }

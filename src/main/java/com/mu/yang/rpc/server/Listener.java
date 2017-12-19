@@ -12,11 +12,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * 监听客户端的连接
- * Created by yangxianda on 2017/2/28.
+ * 用来监听客户端的连接.
+ *
  */
 public class Listener extends Thread{
     private ServerSocketChannel acceptChannel = null;
+    // 监听链接的创建
     private Selector selecor = null;
     private InetSocketAddress address = null;
     private volatile AtomicInteger READER_INDEX = new AtomicInteger(0);
@@ -65,7 +66,7 @@ public class Listener extends Thread{
     public void run() {
         System.out.println("Listener start...");
         while(true){
-            SelectionKey key = null;
+            SelectionKey key;
             try {
                 getSelecor().select();
                 Iterator<SelectionKey> iterator = getSelecor().selectedKeys().iterator();

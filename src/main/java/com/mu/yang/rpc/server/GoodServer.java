@@ -12,7 +12,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  * 第二步： 实现编码解码接口，支持多种协议
  * 第三步:  服务发现
  *
- * Created by xuanda007 on 2017/2/16.
  */
 public class GoodServer {
     private volatile boolean running = true;

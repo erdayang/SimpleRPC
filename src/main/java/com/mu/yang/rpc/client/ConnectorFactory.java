@@ -1,14 +1,12 @@
-package com.mu.yang.rpc.connector;
+package com.mu.yang.rpc.client;
 
 
-import com.mu.yang.rpc.core.Connector;
-import com.mu.yang.rpc.core.ConnectorEngine;
 import com.mu.yang.rpc.entity.Request;
 
-import javax.net.SocketFactory;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import javax.net.SocketFactory;
+import java.net.InetAddress;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -61,10 +59,8 @@ public abstract class ConnectorFactory implements ConnectorEngine{
 
 
 
-    @Override
     public abstract Connector createConnector();
 
-    @Override
     public abstract Connector chooseConnector();
 
     public ResponseFuture send(Request request) {
@@ -72,7 +68,6 @@ public abstract class ConnectorFactory implements ConnectorEngine{
         return connector.send(request);
     }
 
-    @Override
     public void shutdown() {
         for(int i = 0; i < connectors.size(); i++){
             connectors.get(i).shutdown();

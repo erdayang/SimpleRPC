@@ -1,5 +1,6 @@
 package com.mu.yang.rpc.server;
 
+import com.alibaba.fastjson.JSON;
 import com.mu.yang.rpc.entity.Request;
 import com.mu.yang.rpc.entity.Response;
 import com.mu.yang.rpc.entity.ResultCode;
@@ -9,13 +10,18 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+import org.apache.log4j.Logger;
 
 /**
- * 处理数据
- * Created by yangxianda on 2017/3/4.
+ * 真正的调用在这里执行.
+ * 1. 解码
+ * 2. 找到具体的方法并执行，这里应该是异步的才行.
+ * 3. 重新编码并返回
  */
 public class Handler extends Thread {
+    public static final Logger LOGGER = Logger.getLogger(Handler.class);
+
 
     private BlockingQueue<Call> requestQueue;
     private BlockingQueue<Call> responseQueue;
@@ -23,15 +29,15 @@ public class Handler extends Thread {
     public Handler(String name, BlockingQueue<Call> requestQueue){
         super.setName(name);
         this.requestQueue = requestQueue;
-        this.responseQueue = new LinkedBlockingDeque<Call>();
+        this.responseQueue = new LinkedBlockingQueue<Call>();
     }
 
     public void run(){
-        System.out.println(this.getName() + "start...");
+        LOGGER.debug(this.getName() + "start...");
         while(true){
             try {
                 final Call call = requestQueue.take();
-                System.out.println(this.getName() + " process call:" + call.getRequest().getId());
+                LOGGER.debug(this.getName() + " process call:" + call.getRequest().getId());
                 process(call);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -52,7 +58,7 @@ public class Handler extends Thread {
         buffer.flip();
         try {
             int num = ChannelUtils.channelWrite(call.getConnection().channel, buffer);
-            System.out.println(num);
+            LOGGER.debug(num);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,22 +72,23 @@ public class Handler extends Thread {
         try {
             Object obj = InstanceMap.getInstance(request.getClazz());
             Class clazz= obj.getClass();
+            LOGGER.error(JSON.toJSONString(clazz.getMethods()));
             Method method = clazz.getMethod(request.getMethod(), request.getParamType());
             Object result = method.invoke(obj, request.getParams());
             response.setResult(result);
             response.setCode(ResultCode.SUCCESS);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-            response.setCode(ResultCode.NOSUCHMETHOD);
+            response.setCode(ResultCode.NO_SUCH_METHOD);
             response.setError(e);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            response.setCode(ResultCode.NOSUCHMETHOD);
+            response.setCode(ResultCode.NO_SUCH_METHOD);
             response.setError(e);
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-        System.out.println("create response done");
+        LOGGER.debug("create response done");
         return response;
     }
 }

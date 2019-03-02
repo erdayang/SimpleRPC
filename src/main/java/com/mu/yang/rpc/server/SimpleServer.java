@@ -30,20 +30,7 @@ public class SimpleServer {
     private Map<String, Object> objectMap = new HashMap<String, Object>();
     public SimpleServer(int port){
         this.port = port;
-    }
-
-    public SimpleServer addClass(Class<?> clazz){
-        Class<?>[] objs = clazz.getInterfaces();
-        try {
-            for(Class<?> inter : objs){
-                    objectMap.put(inter.getName(), clazz.newInstance());
-            }
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return this;
+        start();
     }
 
     public void start(){
@@ -85,7 +72,6 @@ public class SimpleServer {
                 throw new RuntimeException(e);
             }
         }
-        @Override
         public void run() {
             while(!Thread.interrupted()){
                 process();
@@ -122,7 +108,7 @@ public class SimpleServer {
             response.setId(request.getId());
             try {
                 Class clazz = Class.forName(request.getClazz());
-                Object obj = objectMap.get(request.getClazz());
+                Object obj = InstanceMap.getInstance(request.getClazz());
 
                 Method method = clazz.getMethod(request.getMethod(), request.getParamType());
                 Object result = method.invoke(obj, request.getParams());
@@ -134,11 +120,11 @@ public class SimpleServer {
                 response.setError(e);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
-                response.setCode(ResultCode.NOSUCHMETHOD);
+                response.setCode(ResultCode.NO_SUCH_METHOD);
                 response.setError(e);
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
-                response.setCode(ResultCode.NOSUCHMETHOD);
+                response.setCode(ResultCode.NO_SUCH_METHOD);
                 response.setError(e);
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
@@ -146,15 +132,5 @@ public class SimpleServer {
             return response;
         }
 
-    }
-
-
-
-
-
-
-    public static void main(String[] args){
-        SimpleServer server = new SimpleServer(8080);
-        server.addClass(HelloWorld.class).start();
     }
 }

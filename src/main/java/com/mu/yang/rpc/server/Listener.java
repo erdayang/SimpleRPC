@@ -10,12 +10,16 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.log4j.Logger;
 
 /**
- * 监听客户端的连接
- * Created by yangxianda on 2017/2/28.
+ * 监听客户端的连接.
+ * 如果key是acceptable,创建connection,交给Reader.
  */
-public class Listener extends Thread{
+public class Listener extends Thread {
+
+    public static final Logger LOGGER = Logger.getLogger(Listener.class);
+
     private ServerSocketChannel acceptChannel = null;
     private Selector selecor = null;
     private InetSocketAddress address = null;
@@ -23,6 +27,7 @@ public class Listener extends Thread{
     private Reader[] readers = null;
     private int READER_COUNT = 3;
     private BlockingQueue<Call> requestQueue;
+
     public Listener(String ip, int port, BlockingQueue<Call> requestQueue) throws IOException {
         super("Thread-listener");
         this.requestQueue = requestQueue;
@@ -35,23 +40,25 @@ public class Listener extends Thread{
         selecor = Selector.open();
         acceptChannel.register(selecor, SelectionKey.OP_ACCEPT);
         readers = new Reader[READER_COUNT];
-        for(int i = 0; i < READER_COUNT; i++){
-            readers[i] = new Reader("ReaderThread-"+ i, requestQueue );
+        for (int i = 0; i < READER_COUNT; i++) {
+            readers[i] = new Reader("ReaderThread-" + i, requestQueue);
             readers[i].start();
         }
 
     }
 
-    synchronized Selector getSelecor(){return selecor;}
+    synchronized Selector getSelecor() {
+        return selecor;
+    }
 
-    public Reader getReader(){
-        return readers[READER_INDEX.getAndIncrement()%readers.length];
+    public Reader getReader() {
+        return readers[READER_INDEX.getAndIncrement() % readers.length];
     }
 
     public void doAccept(SelectionKey key) throws IOException, InterruptedException {
-        ServerSocketChannel server = (ServerSocketChannel)key.channel();
+        ServerSocketChannel server = (ServerSocketChannel) key.channel();
         SocketChannel channel;
-        while((channel = server.accept())!= null){
+        while ((channel = server.accept()) != null) {
             channel.configureBlocking(false);
             channel.socket().setTcpNoDelay(false);
             channel.socket().setKeepAlive(true);
@@ -59,23 +66,23 @@ public class Listener extends Thread{
             key.attach(connection);
             Reader reader = getReader();
             reader.addConnection(connection);
+            LOGGER.info(String.format("接入：%s:%d", connection.getHostAddr(), connection.getPort()));
         }
     }
+
     @Override
     public void run() {
-        System.out.println("Listener start...");
-        while(true){
+        LOGGER.info("Listener " + this.getName() + " start...");
+        while (true) {
             SelectionKey key = null;
             try {
                 getSelecor().select();
                 Iterator<SelectionKey> iterator = getSelecor().selectedKeys().iterator();
-                while(iterator.hasNext()){
+                while (iterator.hasNext()) {
                     key = iterator.next();
                     iterator.remove();
-                    if(key.isValid()){
-                        if(key.isAcceptable()){
-                            doAccept(key);
-                        }
+                    if (key.isValid() && key.isAcceptable()) {
+                        doAccept(key);
                     }
                     key = null;
                 }

@@ -5,5 +5,5 @@ package com.mu.yang.rpc.test;
  */
 public interface IHelloWorld {
     String get(String name);
-    String get();
+    int add(Integer a, Integer b);
 }

@@ -7,11 +7,14 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
+import org.apache.log4j.Logger;
 
 /**
  * Created by yangxianda on 2017/3/6.
  */
 public class Writer extends Thread {
+    public static final Logger LOGGER = Logger.getLogger(Writer.class);
+
     private final Selector writeSelector;
     private BlockingQueue<Call> responseQueue;
     public Writer(String name, BlockingQueue<Call> responseQueue) throws IOException {

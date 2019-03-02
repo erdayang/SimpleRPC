@@ -1,7 +1,6 @@
-package com.mu.yang.rpc.connector;
+package com.mu.yang.rpc.client;
 
 import com.alibaba.fastjson.JSON;
-import com.mu.yang.rpc.core.Connector;
 import com.mu.yang.rpc.entity.Request;
 import com.mu.yang.rpc.entity.Response;
 
@@ -25,7 +24,7 @@ public class SimpleConnector implements Connector, Runnable {
         this.id = id;
         System.out.println("new Connector id: "+ id);
         try {
-            this.inputStream = new DataInputStream(socket.getInputStream());
+            this.inputStream = new DataInputStream(socket.getInputStream());//如果断了，应该需要重连机制
             this.outputStream = socket.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -58,7 +57,6 @@ public class SimpleConnector implements Connector, Runnable {
         return responseFuture;
     }
 
-    @Override
     public void shutdown() {
         try {
             if (inputStream != null) {
@@ -74,7 +72,6 @@ public class SimpleConnector implements Connector, Runnable {
         }
     }
 
-    @Override
     public void run() {
         try {
             for(;;) {

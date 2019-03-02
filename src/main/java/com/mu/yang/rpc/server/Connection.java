@@ -1,7 +1,7 @@
 package com.mu.yang.rpc.server;
 
-import com.mu.yang.rpc.entity.Request;
 import com.alibaba.fastjson.JSON;
+import com.mu.yang.rpc.entity.Request;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -12,23 +12,25 @@ import java.nio.channels.SocketChannel;
  * Created by yangxianda on 2017/2/25.
  */
 public class Connection {
+
     public SocketChannel channel = null;
     private Socket socket = null;
     private InetAddress addr = null;
-    private int port ;
+    private int port;
     private String hostAddr = null;
     private ByteBuffer dataBuffer = null;
     private ByteBuffer dataLength = null;
     private ByteBuffer headerBuffer = null;
     private int HEADER_LENGTH = 4;
-    public Connection(SocketChannel channel){
+
+    public Connection(SocketChannel channel) {
         this.channel = channel;
         this.socket = channel.socket();
 
         this.addr = socket.getInetAddress();
-        if(addr==null){
+        if (addr == null) {
             hostAddr = "UNKNOWN";
-        }else{
+        } else {
             hostAddr = addr.getHostAddress();
         }
 
@@ -42,8 +44,8 @@ public class Connection {
         System.out.println("connection read...");
 
         count = ChannelUtils.channelRead(channel, headerBuffer);
-        System.out.println("count = "+ count);
-        if(count < 0 || headerBuffer.hasRemaining()){
+        System.out.println("count = " + count);
+        if (count < 0 || headerBuffer.hasRemaining()) {
             return null;
         }
         headerBuffer.flip();
@@ -54,7 +56,7 @@ public class Connection {
         dataBuffer = ByteBuffer.allocate(length);
 
         count = ChannelUtils.channelRead(channel, dataBuffer);
-        System.out.println("read data count="+count);
+        System.out.println("read data count=" + count);
         String str = new String(dataBuffer.array());
         System.out.println(str);
         dataBuffer.flip();
@@ -64,5 +66,27 @@ public class Connection {
         return request;
     }
 
+    public InetAddress getAddr() {
+        return addr;
+    }
 
+    public void setAddr(InetAddress addr) {
+        this.addr = addr;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getHostAddr() {
+        return hostAddr;
+    }
+
+    public void setHostAddr(String hostAddr) {
+        this.hostAddr = hostAddr;
+    }
 }

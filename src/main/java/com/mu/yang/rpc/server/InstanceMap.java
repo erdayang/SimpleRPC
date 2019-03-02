@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by yangxianda on 2017/3/4.
+ * 用于管理需要在服务端服务的实现代码.
+ * 可以用注解来实现.
+ * 是不是还要采用对象池？
+ * 或者
  */
 public class InstanceMap {
 

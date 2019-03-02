@@ -1,6 +1,4 @@
-package com.mu.yang.rpc.connector;
-
-import com.mu.yang.rpc.core.Connector;
+package com.mu.yang.rpc.client;
 
 import java.io.IOException;
 import java.net.InetAddress;

@@ -6,7 +6,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 /**
- * Created by yangxianda on 2017/2/25.
+ * copy.
  */
 public class ChannelUtils {
     /**

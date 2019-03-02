@@ -1,14 +1,16 @@
 package com.mu.yang.rpc.test;
 
 /**
- * Created by yangxianda on 2016/12/10.
+ * .
  */
 public class HelloWorld implements IHelloWorld {
     public String get(String name) {
         return "this is an proxy test";
     }
 
-    public String get() {
-        return null;
+    public int add(Integer a, Integer b) {
+        return a + b;
     }
+
+
 }

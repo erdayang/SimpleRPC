@@ -1,7 +1,7 @@
-package com.mu.yang.rpc.proxy;
+package com.mu.yang.rpc.client;
 
-import com.mu.yang.rpc.connector.ResponseFuture;
-import com.mu.yang.rpc.core.ConnectorEngine;
+import com.mu.yang.rpc.client.ResponseFuture;
+import com.mu.yang.rpc.client.ConnectorEngine;
 import com.mu.yang.rpc.entity.Request;
 
 import java.lang.reflect.InvocationHandler;

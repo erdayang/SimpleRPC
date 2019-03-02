@@ -1,11 +1,8 @@
-package com.mu.yang.rpc.connector;
+package com.mu.yang.rpc.client;
 
 import com.mu.yang.rpc.entity.Request;
 import com.mu.yang.rpc.entity.Response;
 
-/**
- * Created by yangxianda on 2017/1/2.
- */
 public class ResponseFuture {
     private Request request = null;
     private Response response = null;

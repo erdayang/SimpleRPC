@@ -1,4 +1,4 @@
-package com.mu.yang.rpc.core;
+package com.mu.yang.rpc.client;
 
 import com.mu.yang.rpc.connector.ConnectorFactory;
 import com.mu.yang.rpc.connector.DefaultConnectorFactory;

@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 /**
- * Created by yangxianda on 2017/2/25.
+ *
  */
 public class Connection {
 

@@ -15,6 +15,7 @@ public class Request implements Serializable{
     private Class<?>[] paramType;
     private Object[] params;
     private boolean debug = false;
+    private Protocol protocol;
 
     public Request(){
         this.id = UUID.randomUUID().toString();
@@ -70,5 +71,9 @@ public class Request implements Serializable{
 
     public String toString(){
         return JSON.toJSONString(this);
+    }
+
+    public static enum Protocol {
+        JAVA,PROTO,
     }
 }

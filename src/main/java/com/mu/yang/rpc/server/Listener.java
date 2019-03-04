@@ -37,14 +37,13 @@ public class Listener extends Thread {
         ServerSocket socket = acceptChannel.socket();
         socket.bind(address);
         port = socket.getLocalPort();
-        selecor = Selector.open();
-        acceptChannel.register(selecor, SelectionKey.OP_ACCEPT);
         readers = new Reader[READER_COUNT];
         for (int i = 0; i < READER_COUNT; i++) {
             readers[i] = new Reader("ReaderThread-" + i, requestQueue);
             readers[i].start();
         }
-
+        selecor = Selector.open();
+        acceptChannel.register(selecor, SelectionKey.OP_ACCEPT);
     }
 
     synchronized Selector getSelecor() {
@@ -73,24 +72,34 @@ public class Listener extends Thread {
     @Override
     public void run() {
         LOGGER.info("Listener " + this.getName() + " start...");
-        while (true) {
-            SelectionKey key = null;
-            try {
-                getSelecor().select();
-                Iterator<SelectionKey> iterator = getSelecor().selectedKeys().iterator();
-                while (iterator.hasNext()) {
-                    key = iterator.next();
-                    iterator.remove();
-                    if (key.isValid() && key.isAcceptable()) {
-                        doAccept(key);
+        try {
+            while (true) {
+                SelectionKey key = null;
+                try {
+                    getSelecor().select();
+                    Iterator<SelectionKey> iterator = getSelecor().selectedKeys().iterator();
+                    while (iterator.hasNext()) {
+                        key = iterator.next();
+                        iterator.remove();
+                        if (key.isValid() && key.isAcceptable()) {
+                            doAccept(key);
+                        }
+                        key = null;
                     }
-                    key = null;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+        } finally {
+            try {
+                acceptChannel.close();
+                selecor.close();
+            } catch (IOException e) {
+                // do nothing
+            }
+            // need to close all connnection.
         }
     }
 }

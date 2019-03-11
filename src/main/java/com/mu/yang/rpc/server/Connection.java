@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 /**
- *
+ * Listener对于一次channel的接入，创建一个connection.
  */
 public class Connection {
 

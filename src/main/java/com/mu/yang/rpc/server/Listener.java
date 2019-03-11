@@ -1,5 +1,7 @@
 package com.mu.yang.rpc.server;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -10,7 +12,6 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.apache.log4j.Logger;
 
 /**
  * 监听客户端的连接.
@@ -23,7 +24,7 @@ public class Listener extends Thread {
     private ServerSocketChannel acceptChannel = null;
     private Selector selecor = null;
     private InetSocketAddress address = null;
-    private volatile AtomicInteger READER_INDEX = new AtomicInteger(0);
+    private AtomicInteger readerRotater = new AtomicInteger(0);
     private Reader[] readers = null;
     private int READER_COUNT = 3;
     private BlockingQueue<Call> requestQueue;
@@ -51,7 +52,8 @@ public class Listener extends Thread {
     }
 
     public Reader getReader() {
-        return readers[READER_INDEX.getAndIncrement() % readers.length];
+        int idx = Math.abs(readerRotater.incrementAndGet() % readers.length);
+        return readers[idx];
     }
 
     public void doAccept(SelectionKey key) throws IOException, InterruptedException {
@@ -61,7 +63,7 @@ public class Listener extends Thread {
             channel.configureBlocking(false);
             channel.socket().setTcpNoDelay(false);
             channel.socket().setKeepAlive(true);
-            Connection connection = new Connection(channel);
+            Connection connection = new Connection(channel); // hadoop_rpc是有一个ConnectionManager
             key.attach(connection);
             Reader reader = getReader();
             reader.addConnection(connection);
@@ -86,9 +88,7 @@ public class Listener extends Thread {
                         }
                         key = null;
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
+                } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }

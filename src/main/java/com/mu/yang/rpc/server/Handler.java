@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.log4j.Logger;
 
@@ -66,7 +67,7 @@ public class Handler extends Thread {
     //    writer.wakeUp();
     }
 
-    public Response processRequest(Request request){
+    public Response processRequest(final Request request){
         Response response = new Response();
         response.setId(request.getId());
         try {
@@ -78,17 +79,18 @@ public class Handler extends Thread {
             response.setResult(result);
             response.setCode(ResultCode.SUCCESS);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            LOGGER.error(e);
             response.setCode(ResultCode.NO_SUCH_METHOD);
             response.setError(e);
         } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+            LOGGER.error(e);
             response.setCode(ResultCode.NO_SUCH_METHOD);
             response.setError(e);
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            LOGGER.error(e);
         }
         LOGGER.debug("create response done");
         return response;
     }
+
 }

@@ -1,7 +1,6 @@
 package com.mu.yang.rpc.server;
 
 
-import com.mu.yang.rpc.test.HelloWorld;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -19,10 +18,9 @@ public class NioServer {
 
     public static final Logger LOGGER = Logger.getLogger(NioServer.class);
 
-
     private Listener listener = null;
     // 收到消息之后的队列，给予 handler处理
-    private BlockingQueue requestQueue = new LinkedBlockingQueue();
+    private BlockingQueue<Call> requestQueue = new LinkedBlockingQueue();
     // 消息处理后的队列，用于返回
     //   private BlockingQueue responseQueue = new LinkedBlockingQueue();
 

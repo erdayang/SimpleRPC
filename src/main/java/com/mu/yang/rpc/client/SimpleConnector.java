@@ -42,7 +42,8 @@ public class SimpleConnector implements Connector, Runnable {
 
         try {
             int length = request.toString().getBytes().length;
-            ByteBuffer bytes = ByteBuffer.allocate(4 + length);
+            ByteBuffer bytes = ByteBuffer.allocate(8 + length);
+            bytes.putInt(8888);
             bytes.putInt(length);
             bytes.put(request.toString().getBytes());
             System.out.println("send "+ new String(bytes.array()));

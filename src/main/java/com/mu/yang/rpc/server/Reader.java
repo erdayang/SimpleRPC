@@ -1,6 +1,7 @@
 package com.mu.yang.rpc.server;
 
-import com.mu.yang.rpc.entity.Request;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
@@ -8,7 +9,6 @@ import java.nio.channels.Selector;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import org.apache.log4j.Logger;
 
 /**
  * 读数据,解码.
@@ -26,7 +26,7 @@ public class Reader extends Thread {
         super(name);
         this.requestQueue = requestQueue;
         readSelector = Selector.open();
-        connections = new LinkedBlockingQueue<Connection>();
+        connections = new LinkedBlockingQueue<>();
         LOGGER.info("create " + name);
     }
 
@@ -42,13 +42,21 @@ public class Reader extends Thread {
         LOGGER.debug(this.getName() + ": register read selector..." + connections.size());
     }
 
-    public void doReadLoop() {
+    public void doReadLoop() throws InterruptedException {
         LOGGER.debug(this.getName() + "start...");
         while (true) {
             SelectionKey key = null;
 
+            //int size = connections.size();
             int size = connections.size();
-            LOGGER.debug("connection size: " + size);
+            for (int i = size; i > 0; i--) {
+                Connection connection = connections.take(); // 这里是必须的
+                try {
+                    connection.channel.register(readSelector, SelectionKey.OP_READ, connection);
+                } catch (ClosedChannelException e) {
+                    e.printStackTrace();
+                }
+            }
             try {
                 readSelector.select();
             } catch (IOException e) {
@@ -80,10 +88,11 @@ public class Reader extends Thread {
             LOGGER.debug("connection is null");
             return;
         }
-        Request request = connection.readAndProcess();
+        byte[] data = connection.read();
+        LOGGER.error("data_length: " + data.length);
         Call call = new Call();
         call.setConnection(connection);
-        call.setRequest(request);
+        call.setData(data);
         try {
             requestQueue.put(call);
         } catch (InterruptedException e) {
@@ -94,6 +103,8 @@ public class Reader extends Thread {
     public void run() {
         try {
             doReadLoop();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally {
             try {
                 readSelector.close();

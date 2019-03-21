@@ -1,5 +1,7 @@
 package com.mu.yang.rpc.server;
 
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
@@ -7,7 +9,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
-import org.apache.log4j.Logger;
 
 /**
  * Created by yangxianda on 2017/3/6.
@@ -65,7 +66,7 @@ public class Writer extends Thread {
         Iterator<Call> it = responseQueue.iterator();
         while(it.hasNext()){
             Call call = it.next();
-            System.out.println("get call request id="+call.getRequest().getId());
+            //System.out.println("get call request id="+call.getRequest().getId());
             it.remove();
             SelectionKey key = call.getConnection().channel.keyFor(writeSelector);
             if(null == key) {

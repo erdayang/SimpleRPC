@@ -1,25 +1,24 @@
 package com.mu.yang.rpc.server;
 
-import com.mu.yang.rpc.entity.Request;
 import com.mu.yang.rpc.entity.Response;
 
 /**
  * 一次请求.
  */
 public class Call {
-    private Request request;
+    private byte[] data;
     private Response response;
     private Connection connection;
     public Call(){
 
     }
 
-    public Request getRequest() {
-        return request;
+    public byte[] getData() {
+        return data;
     }
 
-    public void setRequest(Request request) {
-        this.request = request;
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
     public Response getResponse() {

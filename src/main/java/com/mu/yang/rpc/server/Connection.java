@@ -1,7 +1,5 @@
 package com.mu.yang.rpc.server;
 
-import com.alibaba.fastjson.JSON;
-import com.mu.yang.rpc.entity.Request;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -19,7 +17,7 @@ public class Connection {
     private int port;
     private String hostAddr = null;
     private ByteBuffer dataBuffer = null;
-    private ByteBuffer dataLength = null;
+    private ByteBuffer protocolBuffer = null;
     private ByteBuffer headerBuffer = null;
     private int HEADER_LENGTH = 4;
 
@@ -35,13 +33,22 @@ public class Connection {
         }
 
         this.port = socket.getPort();
+        protocolBuffer = ByteBuffer.allocate(4);
         headerBuffer = ByteBuffer.allocate(HEADER_LENGTH);
         System.out.println("create new Connection");
     }
 
-    public Request readAndProcess() throws IOException {
+    public byte[] read() throws IOException {
         int count = -1;
         System.out.println("connection read...");
+
+
+        count = ChannelUtils.channelRead(channel, protocolBuffer);
+        System.out.println("count = " + count);
+        if (count < 0 || protocolBuffer.hasRemaining()) {
+            return null;
+        }
+        protocolBuffer.flip();
 
         count = ChannelUtils.channelRead(channel, headerBuffer);
         System.out.println("count = " + count);
@@ -57,14 +64,10 @@ public class Connection {
 
         count = ChannelUtils.channelRead(channel, dataBuffer);
         System.out.println("read data count=" + count);
-        String str = new String(dataBuffer.array());
-        System.out.println(str);
         dataBuffer.flip();
-        Request request = JSON.parseObject(str, Request.class);
-        System.out.println("get Request: " + JSON.toJSONString(request));
-
-        return request;
+        return dataBuffer.array();
     }
+
 
     public InetAddress getAddr() {
         return addr;

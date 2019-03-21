@@ -5,10 +5,7 @@ import com.alibaba.fastjson.JSON;
 import java.io.Serializable;
 import java.util.UUID;
 
-/**
- * Created by yangxianda on 2016/12/18.
- */
-public class Request implements Serializable{
+public class JsonRequest implements Serializable {
     private String id;
     private byte[] data;
     private String clazz;
@@ -16,9 +13,8 @@ public class Request implements Serializable{
     private Class<?>[] paramType;
     private Object[] params;
     private boolean debug = false;
-    private Protocol protocol;
 
-    public Request(){
+    public JsonRequest() {
         this.id = UUID.randomUUID().toString();
     }
 
@@ -78,16 +74,7 @@ public class Request implements Serializable{
         this.paramType = paramType;
     }
 
-    public String toString(){
+    public String toString() {
         return JSON.toJSONString(this);
-    }
-
-    public static enum Protocol {
-        JAVA((byte) 0x0), PROTO((byte) 0x01);
-        byte flag;
-
-        private Protocol(byte flag) {
-            this.flag = flag;
-        }
     }
 }
